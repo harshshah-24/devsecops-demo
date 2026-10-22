@@ -1,0 +1,12 @@
+rules:
+  - id: lab-flask-sql-injection
+    languages: [python]
+    mode: taint
+    message: Untrusted Flask request data reaches the SQL query argument. Use placeholders and bound parameters.
+    severity: ERROR
+    pattern-sources:
+      - pattern: request.args.get(...)
+    pattern-sinks:
+      - patterns:
+          - pattern: $CONN.execute($SQL, ...)
+          - focus-metavariable: $SQL

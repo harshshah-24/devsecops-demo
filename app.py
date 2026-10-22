@@ -7,7 +7,7 @@ import sqlite3
 import os
 
 app = Flask(__name__)
-DB_PATH = os.path.join(os.path.dirname(__file__), "demo.db")
+DB_PATH = os.environ.get("DB_PATH", "/tmp/demo.db")
 
 
 def get_db():
@@ -29,9 +29,10 @@ def home():
 def get_user():
     name = request.args.get("name", "")
     conn = get_db()
-    query = "SELECT id, username, role FROM users WHERE username = '" + name + "'"  # nosec - intentional for demo
-    cursor = conn.execute(query)
+    query = "SELECT id, username, role FROM users WHERE username = ?"
+    cursor = conn.execute(query, (name,))
     rows = cursor.fetchall()
+    conn.close()
     return {"results": rows}
 
 
